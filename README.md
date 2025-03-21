@@ -1,4 +1,4 @@
-:bulb:# Projeto com React
+# Projeto com React :bulb:
 ## Descrição
 Projeto em Desenvolvimento
 
