@@ -1,0 +1,26 @@
+# Node modules
+/node_modules
+
+node_modules/
+# Logs
+npm-debug.log
+yarn-error.log
+
+# Ambiente
+.env
+
+# Compilação
+/build
+/dist
+/client/build
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
+
+# Configurações do VSCode
+.vscode/
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
