@@ -19,3 +19,8 @@ cookie-parser: Middleware que analisa cookies nas requisições HTTP.
 ### Frontend
 React: Biblioteca JavaScript para criar a interface de usuário interativa e dinâmica.
 CSS/HTML: Para estilizar e estruturar a aplicação front-end.
+
+
+https://github.com/user-attachments/assets/936bd2ed-7c2c-4aa4-8fbd-1057cdf25f67
+
+
