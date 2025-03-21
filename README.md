@@ -5,7 +5,7 @@ Projeto em Desenvolvimento
 ## Funcionalidades
 Cadastro de Usuários<br>
 Login e Autenticação<br>
-Enviar Mensagens<br>
+Envio de Mensagens<br>
 
 ## Tecnologias Utilizadas
 
