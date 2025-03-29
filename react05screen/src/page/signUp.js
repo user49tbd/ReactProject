@@ -8,6 +8,8 @@ import ButtonSubmitC from "../Components/loginComponents/buttonSubmit";
 import SelectData from "../Components/loginComponents/selectData";
 import SignUpUsr1Form from "./signUpUsr1Form";
 import SignUpUsr2Form from "./signUpUsr2Form";
+import PopTest from "../Components/Msgs/popTest";
+import PopContainer from "../Components/Msgs/PopContainer";
 export default function SignUp() {
     let ref = useRef(null)
     useEffect(() => {
@@ -17,38 +19,63 @@ export default function SignUp() {
     }, [])
     const [selected, setSelected] = useState("img1");
 
-function changeForm(e) {
-    console.log("change select ");
-    const selectedId = e.target.id;
+    /*-----------------------*/
+        const [popLst,setPopLst] = useState([])
+        //const [rand,SetRand] = useState(1)
+        //const [Msg,SetMsg] = useState({title:"",msg:"",type:""})
+        const [Msg, SetMsg] = useState({ title: "t", msg: "t", type: "" });
+    /*-----------------------*/
 
-    setSelected(selectedId); // Atualiza o estado
+    function changeForm(e) {
+        console.log("change select ");
+        const selectedId = e.target.id;
 
-    // O selected ainda conterá o valor antigo aqui
-    console.log("Antes do setState:", selected);
-}
+        setSelected(selectedId); // Atualiza o estado
+
+        // O selected ainda conterá o valor antigo aqui
+        console.log("Antes do setState:", selected);
+    }
     return (
         <div>
             <SplitH>
                 <div className={`${Styles.Container} `}>
                     <div className={Styles.sideDiv} ref={ref}>
-                        <div><p>usr1</p><img src="/assets/icons/user_17740838.png" id="img1" alt="Icon" 
-                        onClick={(e) => changeForm(e)}
-                        className={selected == "img1" ? Styles.select : ""}/></div>
+                        <div><p>usr1</p><img src="/assets/icons/user_17740838.png" id="img1" alt="Icon"
+                            onClick={(e) => changeForm(e)}
+                            className={selected == "img1" ? Styles.select : ""} /></div>
                         <div><p>usr2</p><img src="/assets/icons/password_14562503.png" id="img2" alt="Icon"
-                        onClick={(e) => changeForm(e)}
-                        className={selected == "img2" ? Styles.select : ""}/></div>
+                            onClick={(e) => changeForm(e)}
+                            className={selected == "img2" ? Styles.select : ""} /></div>
                     </div>
                     <div className={`${Styles.FormC} `}>
                         <div className={selected == "img1" ? "" : Styles.opac}>
-                            <SignUpUsr1Form></SignUpUsr1Form>
+                            <SignUpUsr1Form
+                                popLst={popLst} 
+                                setPopLst={setPopLst}
+                            ></SignUpUsr1Form>
                         </div>
-                        <div className={selected == "img2" ? "" :Styles.opac}>
-                            <SignUpUsr2Form></SignUpUsr2Form>
+                        <div className={selected == "img2" ? "" : Styles.opac}>
+                            <SignUpUsr2Form
+                                popLst={popLst} 
+                                setPopLst={setPopLst}
+                            ></SignUpUsr2Form>
                         </div>
                     </div>
-                    
+
                 </div>
             </SplitH>
+            {popLst && popLst.length > 0 && (
+                <PopContainer>
+                    {popLst.map((res, index) => (
+                        <div key={res.id}>
+                            <PopTest //show={popLst[index][1]} 
+                                popLst={popLst}
+                                setPopLst={setPopLst}
+                                numb={res.id}></PopTest>
+                        </div>
+                    ))}
+                </PopContainer>
+            )}
         </div>
     );
 }

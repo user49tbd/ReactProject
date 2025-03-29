@@ -1,6 +1,6 @@
 import styles from './css/Input.module.css'
 
-function InputC({type,text,name,placeholder,handleOnChange,value}){
+function InputC({type,text,name,placeholder,handleOnChange,value,HonBlur}){
     return (
         <div className={styles.form_control}>
             <label htmlFor={name}>{text}</label>
@@ -9,8 +9,9 @@ function InputC({type,text,name,placeholder,handleOnChange,value}){
                 name={name} 
                 id={name} 
                 placeholder={placeholder} 
-                onChange={handleOnChange}
+                onInput={handleOnChange}
                 value={value}
+                onBlur={HonBlur}
             />
         </div>
     )

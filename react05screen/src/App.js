@@ -35,6 +35,8 @@ import SignUp from './page/signUp';
 import Info from './page/Info';
 import Contato from './page/contato';
 import Footer from './Layout/FooterElment';
+import UsrDataM from './page/usrDataM';
+import UsrDataMCon from './page/usrDataMCon';
 function App() {
   return (
     <div className="App">
@@ -46,6 +48,7 @@ function App() {
           <Route path='signUp' element={<SignUp></SignUp>}></Route>
           <Route path='info' element={<Info></Info>}></Route>
           <Route path='contact' element={<Contato></Contato>}></Route>
+          <Route path='edit' element={<UsrDataMCon></UsrDataMCon>}></Route>
         </Routes>
       </Router>
       <Footer></Footer>

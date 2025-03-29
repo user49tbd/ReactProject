@@ -69,3 +69,18 @@ span.select{
     background-color: white;
     color: black;
 }
+.fieldV{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    flex-direction: column;
+}
+.fieldV > span{
+    background-color: red;
+    color: white;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    width: 100%;
+    padding: 5px;
+}

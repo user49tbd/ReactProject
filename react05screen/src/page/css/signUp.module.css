@@ -62,7 +62,7 @@ form {
 }
 .usrImg2{
     aspect-ratio: 1/0.3 !important;
-    height: 100% !important;
+    height: 90px !important;
     border-radius: 5px !important;
 }
 /*--------------------------*/
@@ -128,7 +128,6 @@ form {
     align-items: center;
     justify-content: center;
     width: 100%;
-    height: 30%;
 }
 
 /*-------------------------*/
@@ -161,4 +160,20 @@ form {
     opacity: 0;
     z-index: -1 !important;
     display: none !important;
+}
+
+.fieldV{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    flex-direction: column;
+}
+.fieldV > span{
+    background-color: red;
+    color: white;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    width: 100%;
+    padding: 2px;
 }

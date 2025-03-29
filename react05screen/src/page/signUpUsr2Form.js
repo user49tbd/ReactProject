@@ -4,15 +4,82 @@ import { useRef, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom"
 import InputC from "../Components/loginComponents/input";
 import ButtonSubmitC from "../Components/loginComponents/buttonSubmit";
-export default function SignUpUsr2Form(){
+export default function SignUpUsr2Form(props){
     let ref = useRef(null)
         let lap = useRef(null)
         let crm = useRef(null)
         let nav = useNavigate();
-        const [usrData, setUsrData] = useState({});
+        const [usrData, setUsrData] = useState({name:"",password:"",email:"",fileUsr:"",fileCrm:""});
         const [usrConditions, setConditions] = useState([]);
         let imgUsr = useRef(null)
         let imgUsr2 = useRef(null)
+
+        /*--------------------------------*/
+        let popLst=props.popLst 
+        let setPopLst=props.setPopLst
+        /*--------------------------------*/
+        function change2(title1,msg1,type1) {
+            let arr = [...popLst];
+    
+            //console.log(Msg)
+            //SetMsg((prevErros) => ({ ...prevErros, title: title1, msg: msg1, type: type1 }));
+            arr.push({ id: Date.now(), show: true,title: title1, msg: msg1, type: type1 }); // Adicionando um ID único
+            setPopLst(arr);
+    
+            //SetRand(Math.floor(Math.random() * 3) + 1)
+        }
+
+
+        /*-------------------------------------------*/
+        let form1 = useRef(null)
+        const [erros, setErros] = useState({});
+        const validarFormulario = (e) => {
+            let novosErros = {};
+            let err=""
+            console.log(e)
+            console.log("aqui está o valor "+e.name)
+            if(e.name=="password" && !validarSenha(e.value)){
+                err = `O campo ${e.name} está fraco`
+            }
+            if(e.name=="email" && !validarEmail(e.value)){
+                err = `O campo ${e.name} está no formato inválido`
+            }
+            if (!e.value) {
+                err = `O campo ${e.name} é obrigatório.`
+                
+            }
+            return  novosErros = {[e.name]:err};
+          };
+          function validarEmail(email) {
+            // Regex para validar o formato do email
+            const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return regexEmail.test(email);
+          }
+          function validarSenha(senha) {
+            // Regex para validar a senha
+            const regexSenha = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+            return regexSenha.test(senha);
+          }
+          function markAll(){
+            let bol = true
+            Object.keys(usrData).forEach((res)=>{
+                console.log(res)
+                let ckErr=""
+                if(res != "type"){
+                    let data = form1.current.querySelector(`[name='${res}']`);
+                    console.log(data.value)
+                    ckErr = validarFormulario(data)
+                    setErros((prevErros) => ({ ...prevErros, ...ckErr }));
+                    let v = Object.values(ckErr)
+                    if(v != ""){
+                        bol = false
+                    }
+                }
+            })
+            return bol
+        }
+        /*-------------------------------------------*/
+
         useEffect(() => {
             if (ref.current) {
                 ref.current.style.backgroundImage = `url('/assets/imgs/default-image.jpg')`;
@@ -70,20 +137,7 @@ export default function SignUpUsr2Form(){
                 alert("Erro ao enviar os dados. Tente novamente.");
             }
         };
-        /*
-        async function getConditions() {
-            let result = await fetch("http://127.0.0.1:8080/con/getAll", {
-                method: "GET",
-                headers: {
-                    "Content-Type": "Application/json"
-                }
-            }).then((res) => res.json()).then((res) => {
-                console.log(res)
-                return res
-            }).catch((err) => { console.log(err) })
-            setConditions(result)
-        }*/
-        function changeImg(e,imgs) {
+        function changeImg(e,imgs,rf) {
             console.log("change init img")
             const inputElements = e.target
             console.log("target "+inputElements)
@@ -95,6 +149,9 @@ export default function SignUpUsr2Form(){
                     imgs.current.style.backgroundImage = `url(${reader.result})`
                 };
             }
+            console.log("the curretn img is")
+            console.log(rf.current.id)
+            setErros((prevErros) => ({ ...prevErros, ...validarFormulario(rf.current) }));
         }
         function handleChange(e) {
             setUsrData({ ...usrData, [e.target.name]: e.target.value })
@@ -103,45 +160,102 @@ export default function SignUpUsr2Form(){
         function submit(e) {
             e.preventDefault()
             console.log(usrData)
-            handleSubmit(e)
+            let ck = markAll()
+            if(ck){
+                console.log("está válido")
+                change2('Sucesso','as informações foram enviádas',3)
+                handleSubmit(e)
+            }else{
+                console.log("está inválido")
+                change2('Erro','campos incorretos',1)
+            }
         }
-    return(
-        <form className={Styles.mainDiv} onSubmit={submit}>
 
-            <div className={Styles.imgUsrC}>
-                <label htmlFor="fileUsr" className={`${Styles.usrImg}`} ref={imgUsr}></label>
+    /*---------------------------------*/
+    function handleBlur(e){
+        let campo = e.target.name
+        setErros((prevErros) => ({ ...prevErros, ...validarFormulario(e.target) }));
+    };
+    function handleImgLabel(e){
+        console.log("this is lap")
+        console.log(e.current)
+        let val = e.current
+        console.log(e)
+        setErros((prevErros) => ({ ...prevErros, ...validarFormulario(val) }));
+    }
+    /*-----------------------------------*/
+    return(
+        <form className={Styles.mainDiv} onSubmit={submit} ref={form1}>
+
+            <div className={Styles.fieldV}>
+                <div className={Styles.imgUsrC}>
+                    <label name="usr1" htmlFor="fileUsr" className={`${Styles.usrImg}`} ref={imgUsr}
+                    onClick={()=>handleImgLabel(lap)}
+                    ></label>
+                </div>
+                {erros.fileUsr && (
+                    <span>{erros.fileUsr}</span>
+                )}
             </div>
             <input
                 className={`${Styles.inputImg}`}
                 type="file"
                 name="fileUsr"
                 id="fileUsr"
-                onChange={(e) => changeImg(e,imgUsr)}
+                onChange={(e) => changeImg(e,imgUsr,lap)}
                 multiple
                 ref={lap}
             />
 
 
-            <InputC type="text" text="Name" name="name"
-                placeholder=" " handleOnChange={(e) => handleChange(e)}
-                value={usrData.name ? usrData.name : ''}></InputC>
-            <InputC type="email" text="E-Mail" name="email"
-                placeholder=" " handleOnChange={handleChange}
-                value={usrData.email ? usrData.email : ''}></InputC>
-            <InputC type="password" text="Password" name="password"
-                placeholder=" " handleOnChange={handleChange}
-                value={usrData.password ? usrData.password : ''}></InputC>
+            <div className={Styles.fieldV}>
+                <InputC type="text" text="Name" name="name"
+                    placeholder=" " handleOnChange={(e) => handleChange(e)}
+                    value={usrData.name ? usrData.name : ''}
+                    HonBlur={(e) => handleBlur(e)}
+                    ></InputC>
+                {erros.name && (
+                    <span>{erros.name}</span>
+                )}
+            </div>
+            <div className={Styles.fieldV}>
+                <InputC type="email" text="E-Mail" name="email"
+                    placeholder=" " handleOnChange={handleChange}
+                    value={usrData.email ? usrData.email : ''}
+                    HonBlur={(e) => handleBlur(e)}
+                    ></InputC>
+                {erros.email && (
+                    <span>{erros.email}</span>
+                )}
+            </div>
+            <div className={Styles.fieldV}>
+                <InputC type="password" text="Password" name="password"
+                    placeholder=" " handleOnChange={handleChange}
+                    value={usrData.password ? usrData.password : ''}
+                    HonBlur={(e) => handleBlur(e)}
+                    ></InputC>
+                {erros.password && (
+                    <span>{erros.password}</span>
+                )}
+            </div>
 
 
-            <div className={Styles.imgUsrC2}>
-                <label htmlFor="fileCrm" className={`${Styles.usrImg} ${Styles.usrImg2}`} ref={imgUsr2}></label>
+            <div className={Styles.fieldV}>
+                <div className={Styles.imgUsrC2}>
+                    <label name="crm1" htmlFor="fileCrm" className={`${Styles.usrImg} ${Styles.usrImg2}`} ref={imgUsr2}
+                    onClick={()=>handleImgLabel(crm)}
+                    ></label>
+                </div>
+                {erros.fileCrm && (
+                    <span>{erros.fileCrm}</span>
+                )}
             </div>
             <input
                 className={`${Styles.inputImg}`}
                 type="file"
                 name="fileCrm"
                 id="fileCrm"
-                onChange={(e) => changeImg(e,imgUsr2)}
+                onChange={(e) => changeImg(e,imgUsr2,crm)}
                 multiple
                 ref={crm}
             />

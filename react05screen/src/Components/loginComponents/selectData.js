@@ -1,17 +1,19 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Styles from "./css/selectData.module.css"
-import { useState } from "react";
+import { useState, useRef } from "react";
 export default function SelectData(props) {
     const [conditions, setConditions] = useState([]);
 
+    const ref = useRef()
     function changeSelect(e) {
         console.log("selecionado");
         let val = e.target.value;
+        console.log(conditions)
 
         let find = conditions.find((elmt) => elmt === val);
         if (!find && val.length > 0) {
             setConditions(prevConditions => [...prevConditions, val]);
-            handleChangeSelect(e, [...conditions, val]);
+            handleChangeSelect([...conditions, val]);
         }
     }
 
@@ -20,16 +22,46 @@ export default function SelectData(props) {
         const itemToRemove = e.target.textContent;
         let updatedConditions = conditions.filter((item) => item !== itemToRemove);
         setConditions(updatedConditions);
-        handleChangeSelect(e, updatedConditions);
+        handleChangeSelect(updatedConditions);
     }
 
-    function handleChangeSelect(e, updatedConditions) {
+    function handleChangeSelect(updatedConditions) {
         props.setUsrD({ ...props.usrD, ["conditions"]: updatedConditions });
     }
+    /*
+    useEffect(()=>{
+        if(props.select){
+            props.select.forEach(element => {
+                console.log("the element is "+element)
+                //ref.current.value=element
+                let find = conditions.find((elmt) => elmt === element);
+                if (!find && element.length > 0) {
+                    setConditions(prevConditions => [...prevConditions,element]);
+                    handleChangeSelect([...conditions, element]);
+                }
+            });
+        }
+    },[props.select])*/
+
+    useEffect(() => {
+        if (props.select?.length > 0) {
+            setConditions(prevConditions => {
+                // Filtra elementos não duplicados e válidos
+                const newConditions = [...new Set([...prevConditions, ...props.select.filter(el => el.length > 0)])];
+    
+                // Só atualiza se houver mudança real no estado
+                if (newConditions.length !== prevConditions.length) {
+                    props.setUsrD(prevUsrD => ({ ...prevUsrD, conditions: newConditions }));
+                }
+    
+                return newConditions;
+            });
+        }
+    }, [props.select, props.setUsrD]);
 
     return (
         <div className={Styles.selectC}>
-            <select onChange={(e) => changeSelect(e)} name="conditions">
+            <select onChange={(e) => changeSelect(e)} name="conditions" ref={ref}>
                 <option select="true"></option>
                 {props.children}
             </select>

@@ -9,7 +9,7 @@ export default function NavBar() {
     function logout() {
         localStorage.setItem("usrImg", "")
         localStorage.setItem("usrName", "")
-        nav("/")
+        localStorage.setItem("type", "")
     }
     return (
         <div className={styles.Container}>
@@ -19,9 +19,12 @@ export default function NavBar() {
                     <li><Link to='/'>home</Link></li>
                     <li>
                         {
-                            localStorage.getItem("usrName") ? <Link onClick={logout}>logout</Link> : <Link to='login'>login</Link>
+                            localStorage.getItem("usrName") ? <Link onClick={logout} to='/'>logout</Link> : <Link to='login'>login</Link>
                         }
                     </li>
+                        {
+                            localStorage.getItem("usrName")&& <li><Link to='edit'>Editar</Link></li>
+                        }
                     <li><Link to='signUp'>signUp</Link></li>
                     <li><Link to='info'>Info</Link></li>
                     <li><Link to='contact'>Contato</Link></li>
