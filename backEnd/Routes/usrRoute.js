@@ -373,3 +373,163 @@ usrDataRoute.post("/updateUser2", upload.fields([{ name: "usrimg", maxCount: 1 }
         return res.status(400).send({ msg: "Erro ao atualizar usuário" });
     }
 });
+
+//-----------------------UPDATEPASSWORD
+/*
+usrDataRoute.post("/changePass", async (req, res) => {
+    const { email, pass } = req.body;
+    let arr = ["usr1", "usr2"];
+    let pool = await connectSQL();
+
+    let type=""
+    let usr
+    try {
+        for (const element of arr) {
+            console.log(element)
+            let user = await getUsrByEmail(email, pool, element);
+            if(user.recordset[0]){
+                usr = user.recordset[0]
+                type = element
+                break;
+            }
+        }
+        if(!usr){
+            return res.status(400).send({ msg: "email não cadastrado" });
+        }
+
+        updatePass(usr,pool,pass,type)
+
+
+        res.status(200).send({ msg: "Processamento concluído" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ msg: "Erro ao processar requisição" });
+    }
+});*/
+usrDataRoute.post("/changePass", async (req, res) => {
+    const { email, pass } = req.body;
+    let arr = ["usr1", "usr2"];
+    let pool = await connectSQL();
+
+    let type = null;
+    let usr = null;
+
+    console.log("email "+email+" pass "+pass)
+
+    try {
+        for (const element of arr) {
+            console.log(`Verificando tabela: ${element}`);
+            let user = await getUsrByEmail(email, pool, element);
+
+            console.log("after the check")
+            console.log(user)
+            
+            if (user && user.recordset && user.recordset.length > 0) { // Evita erro caso recordset não exista
+                usr = user.recordset[0];
+                type = element;
+                break;
+            }
+        }
+
+        if (!usr) {
+            return res.status(400).send({ msg: "E-mail não cadastrado" });
+        }
+
+        // Agora usamos await para garantir que a senha foi alterada antes de responder
+        await updatePass(usr, pool, pass, type);
+
+        res.status(200).send({ msg: "Senha alterada com sucesso" });
+
+    } catch (error) {
+        console.error("Erro no processamento:", error);
+        res.status(500).send({ msg: "Erro ao processar requisição" });
+    }
+});
+async function updatePass(obj, pool, password, type) {
+    // Definir a query correta com base no tipo de usuário
+    let query = `UPDATE USERMED SET password = @password WHERE NAME = @name`;
+    
+    if (type === "usr1") {
+        query = `UPDATE USERP SET password = @password WHERE NAME = @name`;
+    }
+
+    try {
+        await pool.request()
+            .input("name", sql.VarChar, obj.NAME) // Corrigido 'email' para 'name'
+            .input("password", sql.VarChar, password)
+            .query(query); // Agora usa a query correta
+
+        console.log(`Senha atualizada com sucesso para o usuário ${obj.NAME} na tabela ${type}`);
+    } catch (error) {
+        console.error("Erro ao atualizar senha:", error);
+        throw error;
+    }
+}
+async function getUsrByEmail(email, pool, type) {
+    let query = `SELECT * FROM USERMED U WHERE U.EMAIL LIKE @email`;
+    
+    if (type === "usr1") {
+        query = `SELECT * FROM USERP U WHERE U.EMAIL LIKE @email`;
+    }
+
+    console.log("Executando consulta no banco...");
+
+    try {
+        const result = await pool.request()
+            .input("email", sql.VarChar, email) 
+            .query(query);
+
+        console.log("Resultado da consulta:", result);
+        return result;
+    } catch (error) {
+        console.error("Erro ao executar consulta SQL:", error);
+        throw error;
+    }
+}
+
+usrDataRoute.post("/delAccount", async (req, res) => {
+    const { email, type } = req.body;
+
+    try{
+        let pool = await connectSQL();
+        delOp(email,pool, type)
+
+        res.status(200).send({msg:"usuário excluido com sucesso"})
+    }catch(e){
+        res.status(400).send({msg:"erro ao excluir usuário"})
+    }
+});
+
+
+async function delOp(email,pool, type) {
+    let result
+    try {
+    //const result = await pool.request()
+    if (type === "usr1") {
+        await delUsrCon2(pool, email)
+        let query = `DELETE FROM USERP WHERE EMAIL LIKE @email`;
+        result = await pool.request()
+            .input("email", sql.VarChar, email) 
+            .query(query);
+    }else{
+        let query = `DELETE FROM USERMED WHERE EMAIL LIKE @email`;
+        result = await pool.request()
+            .input("email", sql.VarChar, email) 
+            .query(query);
+    }
+        console.log("Resultado da consulta:", result);
+        return result;
+    } catch (error) {
+        console.error("Erro ao executar consulta SQL:", error);
+        throw error;
+    }
+}
+async function delUsrCon2(pool, email) {
+    let result = await pool.request()
+        .input('email', sql.VarChar, `%${email}%`)
+        .query(`
+            DELETE FROM USERP_CONDITIONS 
+            WHERE ID_USERP IN (SELECT U.ID FROM USERP U WHERE U.EMAIL LIKE @email)
+        `);
+    return result;
+}

@@ -238,6 +238,57 @@ export function UsrDataM2() {
         let val = lap.current
         setErros((prevErros) => ({ ...prevErros, ...validarFormulario(val) }));
     }
+    //--------------------------------DEL
+    let val = '/'
+    function navf() {
+        nav(val)
+    }
+    function logout() {
+        localStorage.setItem("usrImg", "")
+        localStorage.setItem("usrName", "")
+        localStorage.setItem("type", "")
+        navf()
+    }
+    const delUsrAccount = async (e) => {
+        e.preventDefault();
+        try {
+            //formData.append("conditions", usrData.conditions);
+            let type = localStorage.getItem("type")
+            let email = usrData.email
+            const response = await fetch("http://127.0.0.1:8080/user/delAccount", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    email,
+                    type
+                }),
+
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || "Erro ao excluir os dados");
+            }
+
+            console.log(data.msg)
+            //alert("usuário criado")
+            change2('Sucesso', 'conta excluida', 3)
+            logout()
+        } catch (error) {
+            console.error("Erro ao excluir os dados:", error);
+            //alert("Erro ao enviar os dados. Tente novamente.");
+            change2('Erro', 'erro ao excluir', 1)
+        }
+    };
+
+    function delUsr(e) {
+        e.preventDefault()
+        console.log("del usr")
+        delUsrAccount(e)
+    }
 
     return (
         <div>
@@ -322,6 +373,10 @@ export function UsrDataM2() {
 
                             <ButtonSubmitC text="Send" >
                             </ButtonSubmitC>
+                            <button className={Styles.delBtn} onClick={(e) => delUsr(e)}>
+                                <img src="/assets/icons/delete.png">
+                                </img>
+                            </button>
                         </form>
                     </div>
                 </div>

@@ -32,7 +32,7 @@ export default function UsrDataM() {
 
     let ref = useRef(null)
     let lap = useRef(null)
-    const [usrData, setUsrData] = useState({ name: "", password: "", email: "", nasc: "", usrimg: "",con:"" });
+    const [usrData, setUsrData] = useState({ name: "", password: "", email: "", nasc: "", usrimg: "", con: "" });
     const [usrConditions, setConditions] = useState([]);
     let imgUsr = useRef(null)
 
@@ -51,20 +51,20 @@ export default function UsrDataM() {
         if (e.name == "email" && !validarEmail(e.value)) {
             err = `O campo ${e.name} está no formato inválido`
         }
-        if (!e.value && e.name!="conditions") {
+        if (!e.value && e.name != "conditions") {
             err = `O campo ${e.name} é obrigatório.`
 
         }
         if (e.name == "usrimg") {
             //console.log(imgUsr.current.style.backgroundImage)
-            if(!imgUsr.current.style.backgroundImage){
+            if (!imgUsr.current.style.backgroundImage) {
                 err = `O campo ${e.name} é obrigatório.`
-            }else{
+            } else {
                 err = ""
             }
 
         }
-        if(err != ""){
+        if (err != "") {
             console.log("this is the reorrrror")
             console.log(e)
             console.log(err)
@@ -86,7 +86,7 @@ export default function UsrDataM() {
         Object.keys(usrData).forEach((res) => {
             //console.log(res)
             let ckErr = ""
-            if (res != "type" && res !="con") {
+            if (res != "type" && res != "con") {
                 let data = form1.current.querySelector(`[name='${res}']`);
                 //console.log(data.value)
                 ckErr = validarFormulario(data)
@@ -143,11 +143,11 @@ export default function UsrDataM() {
             console.log(data.msg)
             //alert("usuário criado")
             change2('Sucesso', 'usuário atualizado', 3)
-            if(data.img){
+            if (data.img) {
                 let path = `http://localhost:8080${data.img}`
-            //console.log("path "+path)
-            //console.log(data)
-                localStorage.setItem("usrImg",path)
+                //console.log("path "+path)
+                //console.log(data)
+                localStorage.setItem("usrImg", path)
             }
             nav("/edit")
             console.log(data)
@@ -196,29 +196,29 @@ export default function UsrDataM() {
                 //console.log(obj[res.toUpperCase()])
                 let field = res.toUpperCase()
                 //console.log(field)
-                let dataFormatada=""
+                let dataFormatada = ""
                 //data.value = obj[field]
-                if(res == "nasc"){
-                    dataFormatada=new Date(obj[field]).toISOString().split('T')[0]
+                if (res == "nasc") {
+                    dataFormatada = new Date(obj[field]).toISOString().split('T')[0]
                     //setUsrData((prev) => ({ ...prev, [res]: dataFormatada }))
                     data.value = dataFormatada //dataFormatada
                     //console.log("change to "+dataFormatada)
                     setUsrData((prev) => ({ ...prev, [res]: dataFormatada }))
-                }else if(res == "usrimg"){
+                } else if (res == "usrimg") {
                     let path = `http://localhost:8080${obj[field]}`
                     //localStorage.setItem("usrImg",path)
                     //imgUsr.current.style.backgroundImage=path
                     imgUsr.current.style.backgroundImage = `url(${path})`
                 }
-                else if(res == "con"){
+                else if (res == "con") {
                     //console.log("this is the con")
-                    obj[field.toLowerCase()].forEach((res)=>{
+                    obj[field.toLowerCase()].forEach((res) => {
                         console.log(res)
-                        setConditions1((prev)=>([...prev,res.NAME]))
+                        setConditions1((prev) => ([...prev, res.NAME]))
                     })
                     //console.log(obj[field.toLowerCase()])
                 }
-                else{
+                else {
                     data.value = obj[field]
                     setUsrData((prev) => ({ ...prev, [res]: obj[field] }))
                 }
@@ -274,6 +274,57 @@ export default function UsrDataM() {
         console.log(lap.current)
         let val = lap.current
         setErros((prevErros) => ({ ...prevErros, ...validarFormulario(val) }));
+    }
+    //--------------------------------DEL
+    let val = '/'
+    function navf() {
+        nav(val)
+    }
+    function logout() {
+        localStorage.setItem("usrImg", "")
+        localStorage.setItem("usrName", "")
+        localStorage.setItem("type", "")
+        navf()
+    }
+    const delUsrAccount = async (e) => {
+        e.preventDefault();
+        try {
+            //formData.append("conditions", usrData.conditions);
+            let type= localStorage.getItem("type")
+            let email = usrData.email
+            const response = await fetch("http://127.0.0.1:8080/user/delAccount", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    email,
+                    type
+                }),
+                
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || "Erro ao excluir os dados");
+            }
+
+            console.log(data.msg)
+            //alert("usuário criado")
+            change2('Sucesso', 'conta excluida', 3)
+            logout()
+        } catch (error) {
+            console.error("Erro ao excluir os dados:", error);
+            //alert("Erro ao enviar os dados. Tente novamente.");
+            change2('Erro', 'erro ao excluir', 1)
+        }
+    };
+
+    function delUsr(e){
+        e.preventDefault()
+        console.log("del usr")
+        delUsrAccount(e)
     }
     return (
         <div>
@@ -357,6 +408,11 @@ export default function UsrDataM() {
 
                             <ButtonSubmitC text="Send" >
                             </ButtonSubmitC>
+
+                            <button className={Styles.delBtn} onClick={(e)=>delUsr(e)}>
+                                <img src="/assets/icons/delete.png">
+                                </img>
+                            </button>
                         </form>
                     </div>
                 </div>

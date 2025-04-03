@@ -37,6 +37,7 @@ import Contato from './page/contato';
 import Footer from './Layout/FooterElment';
 import UsrDataM from './page/usrDataM';
 import UsrDataMCon from './page/usrDataMCon';
+import FgtPass from './page/fgtPass';
 function App() {
   return (
     <div className="App">
@@ -49,6 +50,7 @@ function App() {
           <Route path='info' element={<Info></Info>}></Route>
           <Route path='contact' element={<Contato></Contato>}></Route>
           <Route path='edit' element={<UsrDataMCon></UsrDataMCon>}></Route>
+          <Route path='fgtP' element={<FgtPass></FgtPass>}></Route>
         </Routes>
       </Router>
       <Footer></Footer>

@@ -143,6 +143,9 @@ export default function Login() {
         //SetRand(Math.floor(Math.random() * 3) + 1)
     }
     /*----------------------*/
+    function redirLst(){
+        nav("/fgtP")
+    }
     return (
         <div>
             <SplitH>
@@ -186,6 +189,8 @@ export default function Login() {
                                 )}
                             </div>
                             <ButtonSubmitC text="Send" ></ButtonSubmitC>
+
+                            <p onClick={redirLst} className={StylesL.fgtPass}>Forgot Password</p>
                         </form>
                     </div>
                 </div>
